@@ -67,8 +67,9 @@ class TreeBasedRag(Usecase):
                     "role": "user",
                     "content": f"""
                     1. Translate the following text into English.
-                    2. Then generate 5 concise alternative phrasings of the translated query for use in a retrieval-augmented generation system.
-                    3. The output must include:
+                    2. Then generate 5 concise alternative phrasings (minimum 10 words each phrase) of the translated query for use in a retrieval-augmented generation system. Make phrase related to credit fraud
+                    3. each phrasing should be semantically similar but use different wording and related to credit fraud
+                    4. The output must include:
                         - 'translation': the English version of the query
                         - 'variants': a list of exactly 5 rephrased English queries
 
@@ -82,9 +83,7 @@ class TreeBasedRag(Usecase):
         # Step 3: Access parsed result directly
         data = response.output_parsed
         query_en = (data.translation or '') + ', ' + ', '.join(data.variants) # type: ignore
-
-      
-        print(query_en, '\n\n')
+        print(query_en,'\n\n')
         # Step 2: Get embedding of the English query
         query_embedding = self.embed_text(query_en)
 

@@ -11,7 +11,7 @@ class PDFRagTool(BaseTool):
         self.rag = TreeBasedRag(
             threshold=threshold,
             collection_name=collection_name,
-            pdf_path="../raw_dataset/Bhatla.pdf"
+            pdf_path="transformed_data/Bhatla.pdf"
         )
 
     @property

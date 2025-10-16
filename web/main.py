@@ -5,13 +5,21 @@ import uuid
 import requests
 import re
 
+# ---------------------------
 # Load environment variables
+# ---------------------------
 load_dotenv()
-API_URL = "http://127.0.0.1:8000/agentic/v1/chat/"
-TOKENS_URL = "http://127.0.0.1:8000/agentic/v1/chat/tokens"
 
-USERNAME = os.getenv("APP_USERNAME", "admin") 
+API_URL = "http://18.142.237.65:8000/agentic/v1/chat/"
+TOKENS_URL = "http://18.142.237.65:8000/agentic/v1/chat/tokens"
+
+USERNAME = os.getenv("APP_USERNAME", "admin")
 PASSWORD = os.getenv("APP_PASSWORD", "1234")
+
+# 🔐 Load API Key from environment (must match FastAPI backend)
+API_KEY = os.getenv("API_KEY", "super-secret-api-key")
+API_KEY_HEADER = {"X-API-Key": API_KEY}
+
 # ---------------------------
 # Helper Functions
 # ---------------------------
@@ -45,11 +53,14 @@ def format_blocks(raw_text: str) -> str:
 
 def stream_from_api(user_input: str, session_id: str):
     """Stream assistant response from API in real-time."""
-    headers = {"Accept": "text/plain"}
+    headers = {"Accept": "text/plain", **API_KEY_HEADER}
     params = {"user_query": user_input, "session_id": session_id}
 
     assistant_msg = ""
     with requests.post(API_URL, params=params, stream=True, headers=headers) as response:
+        if response.status_code == 401:
+            yield "🚫 **Unauthorized** – Invalid API key."
+            return
         for chunk in response.iter_content(chunk_size=1024):
             if not chunk:
                 continue
@@ -60,7 +71,10 @@ def stream_from_api(user_input: str, session_id: str):
 def fetch_latest_token(session_id: str):
     """Fetch latest token count from API for this session."""
     try:
-        resp = requests.get(TOKENS_URL, params={"session_id": session_id})
+        headers = {**API_KEY_HEADER}
+        resp = requests.get(TOKENS_URL, params={"session_id": session_id}, headers=headers)
+        if resp.status_code == 401:
+            return 0
         data = resp.json()
         return int(data.get("tokens", 0))
     except Exception:
@@ -145,4 +159,10 @@ with gr.Blocks() as demo:
         token_display
     )
 
-demo.launch(auth=(USERNAME, PASSWORD))
+demo.launch(
+    auth=(USERNAME, PASSWORD),
+    server_name="0.0.0.0",
+    server_port=7860,
+    show_error=True,
+    share=False
+)

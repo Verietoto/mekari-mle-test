@@ -218,7 +218,7 @@ class FraudSummaryTool(BaseTool):
 
     Arguments:
     - columns: List of columns to summarize or group by.
-    - distinct: Boolean. If True, returns distinct values (max 50) per column along with total count.
+    - distinct: Boolean. If true, returns distinct values (max 50) per column along with total count.
     - filters: Optional AND/OR/NOT/comparison filters.
     - limit: Maximum number of rows to return.
     - order_by: Optional list of dicts with 'column' and 'order' (asc/desc).
@@ -240,7 +240,7 @@ class FraudSummaryTool(BaseTool):
     "filters": {{
         "amt": {{"gt": 100}},
         "city": {{"not": "New York"}},
-        "is_fraud": True
+        "is_fraud": true
     }},
     "order_by": [{{"column": "amt_sum", "order": "desc"}}],
     "limit": 20
@@ -249,13 +249,13 @@ class FraudSummaryTool(BaseTool):
     # 2. Distinct values for merchants and categories
     {{
     "columns": ["merchant", "category"],
-    "distinct": True
+    "distinct": true
     }}
 
     # 3. Time-series of monthly fraud counts for a specific city
     {{
     "time_series": {{"date_column": "trans_date_trans_time", "granularity": "month"}},
-    "filters": {{"city": "Los Angeles", "is_fraud": True}}
+    "filters": {{"city": "Los Angeles", "is_fraud": true}}
     }}
 
     # 4. Group by state and gender, average transaction amount, filter by amount range
@@ -277,7 +277,7 @@ class FraudSummaryTool(BaseTool):
     "filters": {{
         "category": "electronics",
         "job": "Engineer",
-        "is_fraud": True
+        "is_fraud": true
     }},
     "time_series": {{"date_column": "trans_date_trans_time", "granularity": "month"}},
     "order_by": [{{"column": "amt_sum", "order": "desc"}}]

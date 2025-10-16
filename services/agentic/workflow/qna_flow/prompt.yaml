@@ -11,6 +11,7 @@ guardrail_prompt: |
   - Credit card data (name, city, population, is fraud, merchants, job, etc)
   - Fraud credit card data
   - Education about credit card and fradu in credit card
+  - ASking about some term related to credit card fraud
 
   ## Output
   - Flagged: True if sentiment negative or topic not related otherwise False
@@ -84,7 +85,6 @@ agent_query_prompt: |
 
   ## Tool Guidelines
   1. When users asking about mean, highest, median, the most, etc, you need to use statistics like sum, count, max, etc
-  2. is_fraud must either True or False (not true or false, case matter)
     
   ## Tool Usage Examples
 
@@ -133,8 +133,9 @@ agent_query_prompt: |
   - Always mention **page index** if using PdfRagTools.
   
   ## Parameters Guidelines
-  - if using order_by all the columns in order_by must appear in params columns
-
+  - if using order_by, all value in order_by must be exist in columns + metrics, i.e {"columns":["merchant"],"metrics":{"amt":"sum"},"filters":{"is_fraud":true},"order_by":[{"column":"amt_sum","order":"desc"}],"limit":5}
+    it means group by merchant, the metric is sum(amt) and its order by sum(amt), even amt not exit in columns, it occur in metrics
+  - in FraudSummaryTool, you need to first define group by what and put into "columns" then decide what metric or it is just need distinct values
   ## Language
   Follow user query language but it will either Indonesian or English
  
